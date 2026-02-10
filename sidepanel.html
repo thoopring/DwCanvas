@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #333; }
+    
+    .header { padding: 16px; background: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+    .brand { font-size: 15px; font-weight: 700; color: #0a66c2; display: flex; align-items: center; gap: 6px;}
+    
+    /* Coffee Button Style */
+    .btn-lemon { 
+      background: #FFDD00; color: #000; border: none; padding: 6px 12px; border-radius: 20px; 
+      font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none; 
+      display: inline-flex; align-items: center; gap: 4px; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .btn-lemon:hover { background: #ffea5c; transform: translateY(-1px); }
+
+    .controls { padding: 12px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #fff; border-bottom: 1px solid #eee; }
+    button { padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    
+    .btn-primary { background: #0a66c2; color: white; }
+    .btn-primary:hover { background: #004182; }
+    .btn-secondary { background: white; border: 1px solid #0a66c2; color: #0a66c2; }
+    .btn-secondary:hover { background: #eef3f8; }
+
+    #canvas-list { padding: 16px; padding-bottom: 120px; } 
+    
+    .card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .timestamp-badge { background: #eef3f8; color: #0a66c2; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    
+    .card-actions { display: flex; gap: 4px; }
+    .icon-btn { width: 24px; height: 24px; border-radius: 4px; background: #f3f2ef; color: #666; font-size: 14px; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .icon-btn:hover { background: #e0e0e0; color: #333; }
+    .btn-delete:hover { background: #ffebee; color: #d32f2f; }
+
+    .card img { width: 100%; border-radius: 4px; border: 1px solid #eee; display: block; margin-bottom: 8px; }
+    .card textarea { width: 100%; border: 1px solid #eee; border-radius: 4px; padding: 8px; font-family: inherit; font-size: 12px; resize: none; box-sizing: border-box; background: #fafafa; }
+    .card textarea:focus { outline: none; border-color: #0a66c2; background: white; }
+
+    .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px 16px; border-top: 1px solid #eee; display: flex; flex-direction: column; gap: 8px; }
+    .footer-row { display: flex; gap: 8px; }
+    
+    .btn-ai { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; width: 100%; }
+    .btn-pdf { background: #333; color: white; width: 100%; }
+    .btn-reset { width: 40px; background: #f3f2ef; color: #666; }
+
+    .empty-state { text-align: center; color: #888; margin-top: 60px; font-size: 13px; line-height: 1.5;}
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">📸 CleanShot</div>
+    <a href="https://cleanshotforyoutube.lemonsqueezy.com/checkout/buy/17fd0dfc-8d27-4de6-8654-919d84be5648?logo=0&discount=0" target="_blank" class="btn-lemon">☕ Buy me a coffee</a>
+  </div>
+  
+  <div class="controls">
+    <button id="btn-capture" class="btn-primary">📸 Clean Shot</button>
+    <button id="btn-timestamp" class="btn-secondary">⏱️ Timestamp</button>
+  </div>
+
+  <div id="canvas-list">
+    </div>
+
+  <div class="footer">
+    <div class="footer-row">
+      <button id="btn-ai" class="btn-ai">✨ Copy AI Prompt</button>
+      <button id="btn-reset" class="btn-reset" title="Clear All">🗑️</button>
+    </div>
+    <div class="footer-row">
+      <button id="btn-pdf" class="btn-pdf">📄 Export PDF / Print</button>
+    </div>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
