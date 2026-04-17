@@ -1,16 +1,18 @@
 {
   "manifest_version": 3,
-  "name": "CleanShot for YouTube: Capture & Insight",
-  "version": "1.0.6",
-  "description": "Capture clean screenshots without UI, save timestamps, and generate AI insights for LinkedIn.",
+  "name": "CleanShot",
+  "version": "2.0.0",
+  "description": "Turn any YouTube video into a publish-ready LinkedIn carousel in 30 seconds.",
   "permissions": [
     "sidePanel",
     "activeTab",
     "storage",
-    "contextMenus"
+    "contextMenus",
+    "identity"
   ],
   "host_permissions": [
-    "*://*.youtube.com/*"
+    "*://*.youtube.com/*",
+    "https://cleanshot-api.thoopring.workers.dev/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -27,6 +29,10 @@
       "js": ["content.js"]
     }
   ],
+  "oauth2": {
+    "client_id": "470234984264-hvp7lae3el3lgdh7h621sogvne65aemf.apps.googleusercontent.com",
+    "scopes": ["openid", "email", "profile"]
+  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

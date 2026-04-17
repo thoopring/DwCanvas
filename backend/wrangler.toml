@@ -1,0 +1,26 @@
+name = "cleanshot-api"
+main = "src/index.ts"
+compatibility_date = "2026-04-01"
+
+# D1 Database — run `wrangler d1 create cleanshot` to get the ID
+[[d1_databases]]
+binding = "DB"
+database_name = "cleanshot"
+database_id = "83910de4-55e5-4f35-8ebb-1287692978f9"
+
+# R2 Bucket — run `wrangler r2 bucket create cleanshot-artifacts` to create
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "cleanshot-artifacts"
+
+[vars]
+APP_ENV = "production"
+FREE_LAUNCH = "true"
+
+# Secrets (set via `wrangler secret put <NAME>`):
+# - ANTHROPIC_API_KEY
+# - LEMONSQUEEZY_API_KEY
+# - LEMONSQUEEZY_WEBHOOK_SECRET
+# - LEMONSQUEEZY_STORE_ID
+# - GOOGLE_CLIENT_ID
+# - JWT_SECRET

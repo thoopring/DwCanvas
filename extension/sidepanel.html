@@ -1,80 +1,1002 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
-    body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #f8f9fa; color: #333; }
-    
-    .header { padding: 16px; background: white; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
-    .brand { font-size: 15px; font-weight: 700; color: #0a66c2; display: flex; align-items: center; gap: 6px;}
-    
-    /* Coffee Button Style */
-    .btn-lemon { 
-      background: #FFDD00; color: #000; border: none; padding: 6px 12px; border-radius: 20px; 
-      font-size: 12px; font-weight: 700; cursor: pointer; text-decoration: none; 
-      display: inline-flex; align-items: center; gap: 4px; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f0f;
+      --bg-elevated: #1a1a1a;
+      --bg-card: #222222;
+      --bg-hover: #2a2a2a;
+      --border: #2e2e2e;
+      --border-hover: #3a3a3a;
+      --text: #f1f1f1;
+      --text-dim: #aaaaaa;
+      --text-muted: #717171;
+      --accent: #6366f1;
+      --accent-hover: #7c7ff2;
+      --accent-glow: rgba(99,102,241,0.15);
+      --success: #22c55e;
+      --error: #ef4444;
+      --radius: 8px;
+      --radius-sm: 6px;
     }
-    .btn-lemon:hover { background: #ffea5c; transform: translateY(-1px); }
 
-    .controls { padding: 12px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; background: #fff; border-bottom: 1px solid #eee; }
-    button { padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    
-    .btn-primary { background: #0a66c2; color: white; }
-    .btn-primary:hover { background: #004182; }
-    .btn-secondary { background: white; border: 1px solid #0a66c2; color: #0a66c2; }
-    .btn-secondary:hover { background: #eef3f8; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    #canvas-list { padding: 16px; padding-bottom: 120px; } 
-    
-    .card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid #eee; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative; }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .timestamp-badge { background: #eef3f8; color: #0a66c2; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
-    
-    .card-actions { display: flex; gap: 4px; }
-    .icon-btn { width: 24px; height: 24px; border-radius: 4px; background: #f3f2ef; color: #666; font-size: 14px; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .icon-btn:hover { background: #e0e0e0; color: #333; }
-    .btn-delete:hover { background: #ffebee; color: #d32f2f; }
+    .app { display: flex; flex-direction: column; min-height: 100vh; }
 
-    .card img { width: 100%; border-radius: 4px; border: 1px solid #eee; display: block; margin-bottom: 8px; }
-    .card textarea { width: 100%; border: 1px solid #eee; border-radius: 4px; padding: 8px; font-family: inherit; font-size: 12px; resize: none; box-sizing: border-box; background: #fafafa; }
-    .card textarea:focus { outline: none; border-color: #0a66c2; background: white; }
+    /* === HEADER === */
+    .header {
+      padding: 14px 16px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 20;
+    }
+    .brand {
+      font-size: 15px; font-weight: 800;
+      letter-spacing: -0.5px; color: var(--text);
+    }
+    .brand-plan { font-size: 9px; font-weight: 700; margin-left: 6px; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .plan-free { background: var(--bg-card); color: var(--text-muted); }
+    .plan-creator { background: var(--accent-glow); color: var(--accent); }
+    .plan-pro { background: linear-gradient(135deg, #6366f1, #a78bfa); color: white; }
 
-    .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px 16px; border-top: 1px solid #eee; display: flex; flex-direction: column; gap: 8px; }
-    .footer-row { display: flex; gap: 8px; }
-    
-    .btn-ai { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; width: 100%; }
-    .btn-pdf { background: #333; color: white; width: 100%; }
-    .btn-reset { width: 40px; background: #f3f2ef; color: #666; }
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+    .avatar {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 1px solid var(--border);
+    }
+    .btn-icon {
+      width: 30px; height: 30px; border-radius: var(--radius-sm);
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); transition: 150ms;
+    }
+    .btn-icon:hover { background: var(--bg-card); color: var(--text-dim); }
+    .btn-icon svg { width: 16px; height: 16px; }
 
-    .empty-state { text-align: center; color: #888; margin-top: 60px; font-size: 13px; line-height: 1.5;}
+    /* === TABS === */
+    .tabs {
+      display: flex; padding: 0 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 12px 16px;
+      font-size: 12px; font-weight: 600;
+      color: var(--text-muted);
+      border: none; background: none; cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: 150ms;
+    }
+    .tab:hover { color: var(--text-dim); }
+    .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+    /* === VIEWS === */
+    .view { display: none; flex: 1; overflow-y: auto; }
+    .view.active { display: flex; flex-direction: column; }
+
+    /* === LOGIN === */
+    .view-login {
+      justify-content: center; align-items: center;
+      padding: 48px 24px; text-align: center;
+    }
+    .login-icon {
+      width: 52px; height: 52px; border-radius: 12px;
+      background: var(--accent-glow); color: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+    }
+    .login-icon svg { width: 26px; height: 26px; }
+    .login-title { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .login-desc {
+      font-size: 13px; color: var(--text-dim);
+      max-width: 260px; margin: 0 auto 28px; line-height: 1.7;
+    }
+    .btn-google {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 10px 22px; border-radius: 8px;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      font-size: 13px; font-weight: 600; color: var(--text);
+      cursor: pointer; transition: 150ms;
+    }
+    .btn-google:hover { background: var(--bg-card); border-color: var(--border-hover); }
+    .btn-google svg { width: 16px; height: 16px; }
+
+    /* === MAIN === */
+    .video-context {
+      padding: 14px 16px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+    }
+    .video-detected { display: flex; gap: 10px; align-items: flex-start; }
+    .video-thumb {
+      width: 88px; height: 50px; border-radius: var(--radius-sm);
+      background: var(--bg-card); flex-shrink: 0; object-fit: cover;
+      border: 1px solid var(--border);
+    }
+    .video-info { flex: 1; min-width: 0; }
+    .video-title {
+      font-size: 12px; font-weight: 600; color: var(--text);
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+      overflow: hidden; line-height: 1.4; margin-bottom: 3px;
+    }
+    .video-meta { font-size: 11px; color: var(--text-muted); }
+    .no-video {
+      text-align: center; padding: 28px 16px;
+      color: var(--text-muted); font-size: 12px;
+    }
+    .no-video svg { width: 36px; height: 36px; margin-bottom: 10px; opacity: 0.4; color: var(--text-muted); }
+
+    /* One-Shot */
+    .oneshot-section { padding: 16px; flex: 1; }
+    .label {
+      font-size: 10px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+    }
+    .persona-select {
+      width: 100%; padding: 9px 12px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border); font-size: 12px; font-weight: 500;
+      color: var(--text); background: var(--bg-elevated); cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 32px;
+      margin-bottom: 14px;
+    }
+    .persona-select:focus { outline: none; border-color: var(--accent); }
+    .btn-oneshot {
+      width: 100%; padding: 13px;
+      border-radius: var(--radius);
+      border: none; cursor: pointer;
+      font-size: 14px; font-weight: 700;
+      color: white;
+      background: var(--accent);
+      transition: all 150ms;
+      letter-spacing: -0.2px;
+    }
+    .btn-oneshot:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+    .btn-oneshot:disabled {
+      opacity: 0.4; cursor: not-allowed;
+      background: var(--bg-card); color: var(--text-muted);
+    }
+
+    /* === PROCESSING === */
+    .view-processing {
+      justify-content: center; align-items: center;
+      padding: 40px 24px; text-align: center;
+    }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 2.5px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .processing-title {
+      font-size: 14px; font-weight: 700;
+      margin-bottom: 6px; color: var(--text);
+    }
+    .processing-step {
+      font-size: 12px; color: var(--text-dim);
+      margin-bottom: 20px; min-height: 18px;
+      transition: opacity 300ms;
+    }
+    .progress-bar {
+      width: 100%; max-width: 240px;
+      height: 3px; background: var(--border);
+      border-radius: 2px; overflow: hidden; margin: 0 auto;
+    }
+    .progress-fill {
+      height: 100%; background: var(--accent);
+      border-radius: 2px; transition: width 300ms ease;
+      width: 0%;
+    }
+
+    /* === RESULT === */
+    .view-result { padding: 16px 16px 90px; }
+    .result-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 14px;
+    }
+    .result-title { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+    .result-badge {
+      font-size: 9px; font-weight: 700;
+      padding: 3px 8px; border-radius: 10px;
+      background: rgba(34,197,94,0.12); color: var(--success);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .slide-card {
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px;
+      margin-bottom: 10px;
+    }
+    .slide-num {
+      font-size: 9px; font-weight: 700; color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+    }
+    .slide-text { font-size: 13px; line-height: 1.55; color: var(--text); }
+    .hashtags {
+      padding: 10px 14px; margin-top: 8px;
+      font-size: 12px; color: var(--accent); font-weight: 500;
+      background: var(--bg-elevated); border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .result-actions {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+    .btn-download {
+      flex: 1; padding: 11px;
+      border-radius: var(--radius-sm);
+      border: none; cursor: pointer;
+      font-size: 13px; font-weight: 600;
+      background: var(--accent); color: white;
+      transition: 150ms;
+    }
+    .btn-download:hover { background: var(--accent-hover); }
+    .btn-secondary {
+      padding: 11px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg-elevated); color: var(--text);
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      transition: 150ms;
+    }
+    .btn-secondary:hover { background: var(--bg-card); border-color: var(--border-hover); }
+
+    /* === LIBRARY === */
+    .view-library { padding: 16px; }
+
+    .library-toolbar {
+      display: flex; gap: 8px; margin-bottom: 14px;
+    }
+    .search-input {
+      flex: 1;
+      padding: 8px 12px 8px 32px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-size: 12px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23aaaaaa' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 10px center;
+    }
+    .search-input:focus { outline: none; border-color: var(--accent); }
+    .search-input::placeholder { color: var(--text-muted); }
+    .filter-btn {
+      padding: 8px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted); font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: 150ms;
+      display: flex; align-items: center; gap: 4px;
+    }
+    .filter-btn:hover { color: var(--text-dim); border-color: var(--border-hover); }
+    .filter-btn.active { color: #fbbf24; border-color: #fbbf24; background: rgba(251,191,36,0.08); }
+    .filter-btn svg { width: 14px; height: 14px; }
+
+    .library-section-title {
+      font-size: 10px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin: 16px 0 8px;
+    }
+
+    .library-item {
+      display: flex; gap: 10px;
+      padding: 10px; background: var(--bg-elevated);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      margin-bottom: 8px; cursor: pointer;
+      transition: 150ms;
+      position: relative;
+    }
+    .library-item:hover { background: var(--bg-card); border-color: var(--border-hover); }
+    .library-item:hover .library-actions { opacity: 1; }
+    .library-item.failed {
+      opacity: 0.55;
+      cursor: default;
+    }
+    .library-item.failed:hover { opacity: 0.8; }
+
+    .library-thumb-wrap { position: relative; flex-shrink: 0; }
+    .library-thumb {
+      width: 72px; height: 40px; border-radius: 4px;
+      background: var(--bg-card); object-fit: cover;
+      display: block;
+    }
+    .library-fav-star {
+      position: absolute; top: -4px; right: -4px;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: var(--bg); display: flex; align-items: center; justify-content: center;
+    }
+    .library-fav-star svg { width: 12px; height: 12px; color: #fbbf24; fill: #fbbf24; }
+
+    .library-info { flex: 1; min-width: 0; overflow: hidden; }
+    .library-title {
+      font-size: 12px; font-weight: 600; color: var(--text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .library-hook {
+      font-size: 11px; color: var(--text-dim);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      margin-bottom: 3px; font-style: italic;
+    }
+    .library-hook-failed { color: var(--error); font-style: normal; }
+    .library-date { font-size: 10px; color: var(--text-muted); }
+
+    .library-actions {
+      position: absolute; top: 8px; right: 8px;
+      display: flex; gap: 2px;
+      opacity: 0; transition: opacity 150ms;
+      background: var(--bg-card);
+      padding: 2px; border-radius: 6px;
+    }
+    .library-item.failed .library-actions { opacity: 1; }
+    .library-action {
+      width: 26px; height: 26px; border-radius: 4px;
+      background: transparent; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); transition: 120ms;
+    }
+    .library-action:hover { background: var(--bg-hover); color: var(--text); }
+    .library-action.star-active { color: #fbbf24; }
+    .library-action.star-active:hover { color: #fbbf24; }
+    .library-action.retry { color: var(--accent); }
+    .library-action.retry:hover { background: var(--accent-glow); color: var(--accent); }
+    .library-action.delete:hover { background: rgba(239,68,68,0.15); color: var(--error); }
+    .library-action svg { width: 14px; height: 14px; }
+
+    /* === DROPDOWN === */
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-menu {
+      position: absolute; top: calc(100% + 6px); right: 0;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      min-width: 180px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      padding: 6px;
+      display: none;
+      z-index: 30;
+    }
+    .dropdown.open .dropdown-menu { display: block; }
+    .dropdown-header {
+      padding: 8px 10px 10px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 4px;
+    }
+    .dropdown-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dropdown-email { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dropdown-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; border-radius: 4px;
+      cursor: pointer; transition: 120ms;
+      background: transparent; border: none; width: 100%;
+      font-size: 12px; font-weight: 500; color: var(--text-dim);
+      text-align: left;
+    }
+    .dropdown-item:hover { background: var(--bg-card); color: var(--text); }
+    .dropdown-item.danger:hover { background: rgba(239,68,68,0.1); color: var(--error); }
+    .dropdown-item svg { width: 14px; height: 14px; }
+
+    /* === MODAL === */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      display: none;
+      align-items: center; justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 94%; max-width: 420px;
+      max-height: 90vh; overflow-y: auto;
+      padding: 20px;
+    }
+    .modal-title {
+      font-size: 15px; font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .modal-sub {
+      font-size: 12px; color: var(--text-muted);
+      margin-bottom: 20px; line-height: 1.5;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: var(--text-muted); margin-bottom: 6px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .form-input {
+      width: 100%; padding: 9px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-size: 13px;
+    }
+    .form-input:focus { outline: none; border-color: var(--accent); }
+    .form-row { display: flex; gap: 10px; align-items: center; }
+    .color-swatch {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .template-picker {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .template-option {
+      padding: 10px 6px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 10px; font-weight: 600;
+      color: var(--text-dim); text-align: center;
+      cursor: pointer; transition: 150ms;
+    }
+    .template-option:hover { border-color: var(--border-hover); }
+    .template-option.selected {
+      border-color: var(--accent);
+      color: var(--text);
+      background: var(--accent-glow);
+    }
+    .template-preview {
+      width: 100%; aspect-ratio: 1;
+      border-radius: 4px; margin-bottom: 6px;
+      background-size: cover;
+    }
+    .template-preview.minimal_dark { background: linear-gradient(135deg, #0f0f0f, #1a1a1a); box-shadow: inset 8px 0 0 var(--accent); }
+    .template-preview.editorial_bold { background: #FDE047; }
+    .template-preview.clean_light { background: #FAFAF7; border: 1px solid #e5e5e5; }
+    .modal-actions {
+      display: flex; gap: 8px; justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    /* === CAPTURE VIEW === */
+    .capture-controls {
+      padding: 14px 16px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .btn-capture-action {
+      padding: 11px; border: none; cursor: pointer;
+      border-radius: var(--radius-sm);
+      background: var(--accent); color: white;
+      font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: 150ms;
+    }
+    .btn-capture-action svg { width: 15px; height: 15px; }
+    .btn-capture-action:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn-capture-action:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-capture-action.secondary {
+      background: var(--bg-card); color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-capture-action.secondary:hover:not(:disabled) {
+      background: var(--bg-hover); border-color: var(--border-hover);
+    }
+
+    .capture-list {
+      flex: 1; overflow-y: auto;
+      padding: 16px 16px 100px;
+    }
+    .capture-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .capture-card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+    .capture-type {
+      font-size: 10px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .capture-actions {
+      display: flex; gap: 4px;
+    }
+    .capture-icon-btn {
+      width: 24px; height: 24px; border-radius: 4px;
+      background: transparent; border: none; cursor: pointer;
+      color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      transition: 120ms;
+    }
+    .capture-icon-btn:hover { background: var(--bg-card); color: var(--text); }
+    .capture-icon-btn.delete:hover { background: rgba(239,68,68,0.15); color: var(--error); }
+    .capture-icon-btn svg { width: 13px; height: 13px; }
+
+    .capture-card img {
+      width: 100%; border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      display: block; margin-bottom: 8px;
+    }
+    .capture-timestamp-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--accent-glow); color: var(--accent);
+      padding: 4px 10px; border-radius: 4px;
+      font-size: 12px; font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .capture-video-title {
+      font-size: 12px; font-weight: 600; color: var(--text);
+      margin-bottom: 8px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .capture-card textarea {
+      width: 100%; padding: 8px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-family: inherit;
+      font-size: 12px; resize: vertical;
+      min-height: 50px;
+    }
+    .capture-card textarea:focus {
+      outline: none; border-color: var(--accent);
+    }
+
+    .capture-footer {
+      position: sticky; bottom: 0;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      display: flex; gap: 8px;
+    }
+
+    .capture-empty {
+      text-align: center; padding: 48px 24px;
+      color: var(--text-muted); font-size: 12px;
+    }
+    .capture-empty svg {
+      width: 44px; height: 44px; margin-bottom: 12px;
+      opacity: 0.3; color: var(--text-muted);
+    }
+
+    /* === ERROR STATE === */
+    .error-state {
+      padding: 32px 24px;
+      text-align: center;
+    }
+    .error-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: rgba(239,68,68,0.1); color: var(--error);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .error-icon svg { width: 24px; height: 24px; }
+    .error-title {
+      font-size: 14px; font-weight: 700;
+      color: var(--text); margin-bottom: 8px;
+    }
+    .error-message {
+      font-size: 12px; color: var(--text-dim);
+      line-height: 1.6; max-width: 280px; margin: 0 auto 20px;
+    }
+    .error-actions {
+      display: flex; gap: 8px; justify-content: center;
+    }
+    .btn-retry {
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      border: none; cursor: pointer;
+      background: var(--accent); color: white;
+      font-size: 13px; font-weight: 600;
+      transition: 150ms;
+    }
+    .btn-retry:hover { background: var(--accent-hover); }
+    .btn-ghost {
+      padding: 10px 20px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: transparent; color: var(--text-dim);
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: 150ms;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: var(--border-hover); }
+
+    /* === HOOK PICKER === */
+    .hook-picker-view {
+      padding: 16px 16px 90px;
+    }
+    .hook-picker-title {
+      font-size: 14px; font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .hook-picker-sub {
+      font-size: 12px; color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .hook-option {
+      padding: 16px;
+      background: var(--bg-elevated);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px; cursor: pointer;
+      transition: 150ms;
+    }
+    .hook-option:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-card);
+    }
+    .hook-option.selected {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .hook-label {
+      font-size: 10px; font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+    .hook-text {
+      font-size: 14px; line-height: 1.5;
+      color: var(--text);
+    }
+
+    /* === LAUNCH BANNER === */
+    .launch-banner {
+      margin: 12px 16px 0;
+      padding: 12px 14px;
+      background: linear-gradient(135deg, rgba(253, 224, 71, 0.08), rgba(253, 224, 71, 0.04));
+      border: 1px solid rgba(253, 224, 71, 0.3);
+      border-radius: var(--radius);
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .launch-icon {
+      color: #fde047;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+    .launch-icon svg { width: 16px; height: 16px; }
+    .launch-content { flex: 1; }
+    .launch-title {
+      font-size: 12px; font-weight: 700;
+      color: #fde047; margin-bottom: 3px;
+      letter-spacing: -0.2px;
+    }
+    .launch-message {
+      font-size: 11px; color: var(--text-dim);
+      line-height: 1.5; margin-bottom: 8px;
+    }
+    .launch-message strong { color: var(--text); }
+    .launch-actions {
+      display: flex; gap: 6px;
+    }
+    .btn-coffee {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 10px;
+      background: #fde047; color: #0a0a0a;
+      border: none; border-radius: 4px;
+      font-size: 10px; font-weight: 700;
+      text-decoration: none; cursor: pointer;
+      transition: 150ms;
+    }
+    .btn-coffee:hover { background: #fef08a; }
+    .btn-coffee svg { width: 11px; height: 11px; }
+
+    /* === UPGRADE === */
+    .upgrade-banner {
+      margin: 16px; padding: 16px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(167,139,250,0.1));
+      border: 1px solid var(--accent);
+      border-radius: var(--radius);
+    }
+    .upgrade-banner h3 {
+      font-size: 13px; font-weight: 700;
+      margin-bottom: 4px; color: var(--text);
+    }
+    .upgrade-banner p {
+      font-size: 12px; color: var(--text-dim);
+      margin-bottom: 12px; line-height: 1.5;
+    }
+    .btn-upgrade {
+      display: inline-block; padding: 7px 16px;
+      background: var(--accent); color: white;
+      border: none; border-radius: var(--radius-sm);
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      transition: 150ms;
+    }
+    .btn-upgrade:hover { background: var(--accent-hover); }
+
+    /* === EMPTY === */
+    .empty {
+      text-align: center; padding: 48px 20px;
+      color: var(--text-muted); font-size: 13px;
+    }
+    .empty svg { width: 44px; height: 44px; margin-bottom: 12px; opacity: 0.3; color: var(--text-muted); }
+    .empty p { margin-top: 4px; font-size: 12px; }
+
+    /* === TOAST === */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      padding: 10px 18px; border-radius: 8px;
+      background: var(--bg-card); color: var(--text);
+      border: 1px solid var(--border);
+      font-size: 12px; font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      z-index: 100; opacity: 0;
+      transition: opacity 200ms ease;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="brand">📸 CleanShot</div>
-    <a href="https://cleanshotforyoutube.lemonsqueezy.com/checkout/buy/17fd0dfc-8d27-4de6-8654-919d84be5648?logo=0&discount=0" target="_blank" class="btn-lemon">☕ Buy me a coffee</a>
-  </div>
-  
-  <div class="controls">
-    <button id="btn-capture" class="btn-primary">📸 Clean Shot</button>
-    <button id="btn-timestamp" class="btn-secondary">⏱️ Timestamp</button>
-  </div>
-
-  <div id="canvas-list">
+  <div class="app">
+    <!-- HEADER -->
+    <div class="header">
+      <div>
+        <span class="brand">CleanShot</span>
+        <span id="plan-label" class="brand-plan" style="display:none"></span>
+      </div>
+      <div class="header-actions">
+        <div class="dropdown" id="user-dropdown">
+          <img class="avatar" id="user-avatar" src="" alt="" style="display:none; cursor: pointer;">
+          <div class="dropdown-menu">
+            <div class="dropdown-header">
+              <div class="dropdown-name" id="dropdown-name"></div>
+              <div class="dropdown-email" id="dropdown-email"></div>
+            </div>
+            <button class="dropdown-item" id="btn-settings">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+              Brand settings
+            </button>
+            <button class="dropdown-item danger" id="btn-logout">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+              Sign out
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-  <div class="footer">
-    <div class="footer-row">
-      <button id="btn-ai" class="btn-ai">✨ Copy AI Prompt</button>
-      <button id="btn-reset" class="btn-reset" title="Clear All">🗑️</button>
+    <!-- TABS -->
+    <div class="tabs" id="tab-bar" style="display:none">
+      <button class="tab active" data-tab="main">Create</button>
+      <button class="tab" data-tab="capture">Capture</button>
+      <button class="tab" data-tab="library">Library</button>
     </div>
-    <div class="footer-row">
-      <button id="btn-pdf" class="btn-pdf">📄 Export PDF / Print</button>
+
+    <!-- LOGIN VIEW -->
+    <div class="view view-login active" id="view-login">
+      <div class="login-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      </div>
+      <div class="login-title">CleanShot</div>
+      <div class="login-desc">Turn any YouTube video into a publish-ready LinkedIn carousel in 30 seconds.</div>
+      <button class="btn-google" id="btn-login">
+        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Sign in with Google
+      </button>
     </div>
+
+    <!-- MAIN VIEW -->
+    <div class="view view-main" id="view-main">
+      <div class="video-context" id="video-context">
+        <div class="no-video" id="no-video">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <p>Open a YouTube video to get started</p>
+        </div>
+        <div class="video-detected" id="video-detected" style="display:none">
+          <img class="video-thumb" id="video-thumb" src="" alt="">
+          <div class="video-info">
+            <div class="video-title" id="video-title"></div>
+            <div class="video-meta" id="video-meta"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="oneshot-section">
+        <div class="label">Template</div>
+        <select class="persona-select" id="template-select">
+          <option value="minimal_dark">Minimal Dark &mdash; clean &amp; professional</option>
+          <option value="editorial_bold">Editorial Bold &mdash; black &amp; yellow</option>
+          <option value="clean_light">Clean Light &mdash; editorial serif</option>
+        </select>
+        <button class="btn-oneshot" id="btn-oneshot" disabled>Generate Carousel</button>
+      </div>
+
+      <!-- Launch Banner: free during soft launch, paid coming ~1 month -->
+      <div class="launch-banner" id="launch-banner">
+        <div class="launch-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="launch-content">
+          <div class="launch-title">Free during launch</div>
+          <div class="launch-message">
+            CleanShot is <strong>100% free</strong> for the next month. Paid plans launching <strong>mid-May 2026</strong> — lock in early access now.
+          </div>
+          <div class="launch-actions">
+            <a href="https://buymeacoffee.com/thoopring" target="_blank" class="btn-coffee">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+              Support with coffee
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="upgrade-banner" id="upgrade-banner" style="display:none">
+        <h3>Unlock unlimited carousels</h3>
+        <p>Your free trial is used. Upgrade to Creator for 30 videos/month.</p>
+        <button class="btn-upgrade" id="btn-upgrade">Upgrade &mdash; $19/mo</button>
+      </div>
+    </div>
+
+    <!-- PROCESSING VIEW -->
+    <div class="view view-processing" id="view-processing">
+      <div class="spinner"></div>
+      <div class="processing-title" id="processing-title">Generating your carousel</div>
+      <div class="processing-step" id="processing-step">Starting up...</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <!-- RESULT VIEW -->
+    <div class="view view-result" id="view-result">
+      <div class="result-header">
+        <div class="result-title">Your Carousel</div>
+        <div class="result-badge">Ready</div>
+      </div>
+      <div id="slides-container"></div>
+      <div class="result-actions">
+        <button class="btn-secondary" id="btn-copy-carousel">Copy Text</button>
+        <button class="btn-download" id="btn-download-zip">Download ZIP</button>
+      </div>
+    </div>
+
+    <!-- CAPTURE VIEW (legacy screenshot + timestamp feature) -->
+    <div class="view view-capture" id="view-capture">
+      <div class="capture-controls">
+        <button id="btn-capture-shot" class="btn-capture-action">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          <span>Clean Shot</span>
+        </button>
+        <button id="btn-capture-time" class="btn-capture-action secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Timestamp</span>
+        </button>
+      </div>
+      <div id="capture-list" class="capture-list"></div>
+      <div class="capture-footer">
+        <button class="btn-secondary" id="btn-capture-clear">Clear all</button>
+        <button class="btn-download" id="btn-capture-pdf">Export PDF</button>
+      </div>
+    </div>
+
+    <!-- LIBRARY VIEW -->
+    <div class="view view-library" id="view-library">
+      <div class="library-toolbar">
+        <input type="text" id="library-search" class="search-input" placeholder="Search videos...">
+        <button class="filter-btn" id="library-fav-filter" title="Show favorites only">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </button>
+      </div>
+      <div id="library-list"></div>
+    </div>
+
+    <!-- ERROR VIEW -->
+    <div class="view" id="view-error">
+      <div class="error-state">
+        <div class="error-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="error-title" id="error-title">Something went wrong</div>
+        <div class="error-message" id="error-message">Please try again.</div>
+        <div class="error-actions" id="error-actions">
+          <button class="btn-ghost" id="btn-error-back">Go back</button>
+          <button class="btn-retry" id="btn-error-retry">Try again</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOOK PICKER VIEW -->
+    <div class="view hook-picker-view" id="view-hooks">
+      <div class="hook-picker-title">Pick your hook</div>
+      <div class="hook-picker-sub">Claude generated 3 angles. <strong>Click one</strong> to select, then <strong>Generate with this hook</strong>. (Option 1 is pre-selected.)</div>
+      <div id="hook-options"></div>
+      <div class="result-actions">
+        <button class="btn-secondary" id="btn-cancel-hook">Cancel</button>
+        <button class="btn-download" id="btn-confirm-hook" disabled>Continue</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div class="modal-backdrop" id="modal-settings">
+      <div class="modal">
+        <div class="modal-title">Brand settings</div>
+        <div class="modal-sub">Your name, handle, and style — applied to every carousel you generate.</div>
+
+        <div class="form-group">
+          <label class="form-label">Display name</label>
+          <input type="text" id="setting-name" class="form-input" placeholder="Your full name" maxlength="50">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">LinkedIn handle</label>
+          <input type="text" id="setting-handle" class="form-input" placeholder="in/yourname" maxlength="30">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Brand color</label>
+          <div class="form-row">
+            <input type="color" id="setting-color" class="color-swatch" value="#6366F1">
+            <input type="text" id="setting-color-text" class="form-input" value="#6366F1" maxlength="7">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Default template</label>
+          <div class="template-picker" id="template-picker">
+            <div class="template-option" data-template="minimal_dark">
+              <div class="template-preview minimal_dark"></div>
+              Minimal Dark
+            </div>
+            <div class="template-option" data-template="editorial_bold">
+              <div class="template-preview editorial_bold"></div>
+              Editorial Bold
+            </div>
+            <div class="template-option" data-template="clean_light">
+              <div class="template-preview clean_light"></div>
+              Clean Light
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" id="btn-settings-cancel">Cancel</button>
+          <button class="btn-download" id="btn-settings-save">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
   </div>
 
+  <script src="lib/jszip.min.js"></script>
+  <script src="lib/jspdf.umd.min.js"></script>
+  <script src="templates.js"></script>
   <script src="sidepanel.js"></script>
 </body>
 </html>
