@@ -74,11 +74,16 @@ function setupListeners() {
   $('#btn-oneshot').addEventListener('click', handleOneShot);
   $('#btn-copy-carousel').addEventListener('click', handleCopyCarousel);
   $('#btn-download-zip').addEventListener('click', handleDownloadZip);
-  $('#btn-upgrade')?.addEventListener('click', handleUpgrade);
+  $('#btn-upgrade')?.addEventListener('click', (e) => {
+    handleUpgrade(e.currentTarget.dataset.plan || 'creator');
+  });
   $('#btn-logout')?.addEventListener('click', handleLogout);
   $('#btn-settings')?.addEventListener('click', openSettings);
   $('#btn-settings-cancel')?.addEventListener('click', closeSettings);
   $('#btn-settings-save')?.addEventListener('click', saveSettings);
+  $('#btn-voice-upgrade')?.addEventListener('click', () => handleUpgrade('pro'));
+  $('#btn-voice-train')?.addEventListener('click', trainVoice);
+  $('#btn-voice-clear')?.addEventListener('click', clearVoice);
   $('#btn-confirm-hook')?.addEventListener('click', confirmHookAndGenerate);
   $('#btn-cancel-hook')?.addEventListener('click', cancelHookPick);
 
@@ -198,14 +203,54 @@ function showApp() {
     planLabel.className = 'brand-plan plan-free';
   }
 
-  // Launch mode: all features free, upgrade banner hidden
-  $('#upgrade-banner').style.display = 'none';
-  $('#launch-banner').style.display = 'flex';
+  // Paywall mode: show upgrade banner when Free trial used or Creator quota exceeded
+  $('#launch-banner').style.display = 'none';
+  renderUpgradeBanner();
 
   // Sync template dropdown with user default
   const tplSel = $('#template-select');
   if (tplSel && state.user.default_template) {
     tplSel.value = state.user.default_template;
+  }
+}
+
+function renderUpgradeBanner() {
+  const banner = $('#upgrade-banner');
+  const u = state.user;
+  if (!banner || !u) return;
+
+  const isPro = u.plan === 'pro' && u.plan_status === 'active';
+  if (isPro) { banner.style.display = 'none'; return; }
+
+  const isCreator = u.plan === 'creator' && u.plan_status === 'active';
+  const used = u.usage?.videos_used ?? 0;
+  const overCreatorQuota = isCreator && used >= 30;
+  const freeTrialUsed = u.plan === 'free' && u.trial_used;
+
+  if (freeTrialUsed) {
+    banner.querySelector('h3').textContent = 'Unlock unlimited carousels';
+    banner.querySelector('p').textContent = 'Your free trial is used. Upgrade to Creator for 30 videos/month.';
+    const btn = banner.querySelector('#btn-upgrade');
+    btn.textContent = 'Upgrade — $19/mo';
+    btn.dataset.plan = 'creator';
+    banner.style.display = 'block';
+  } else if (overCreatorQuota) {
+    banner.querySelector('h3').textContent = 'Monthly limit reached';
+    banner.querySelector('p').textContent = 'You\'ve used 30 videos this month. Upgrade to Pro for unlimited + Brand Voice.';
+    const btn = banner.querySelector('#btn-upgrade');
+    btn.textContent = 'Upgrade to Pro — $49/mo';
+    btn.dataset.plan = 'pro';
+    banner.style.display = 'block';
+  } else if (isCreator) {
+    // Subtle Pro upsell for Creator users
+    banner.querySelector('h3').textContent = 'Want your own voice?';
+    banner.querySelector('p').textContent = `${used}/30 videos used this month. Pro adds Brand Voice so AI writes in your style.`;
+    const btn = banner.querySelector('#btn-upgrade');
+    btn.textContent = 'Get Pro — $49/mo';
+    btn.dataset.plan = 'pro';
+    banner.style.display = 'block';
+  } else {
+    banner.style.display = 'none';
   }
 }
 
@@ -604,6 +649,13 @@ async function confirmHookAndGenerate() {
     state.pendingInsights = null;
     state.pendingHooks = null;
     state.processing = false;
+
+    // Keep quota counter in sync for banner/paywall logic
+    if (state.user?.usage) state.user.usage.videos_used = (state.user.usage.videos_used ?? 0) + 1;
+    if (state.user?.plan === 'free') state.user.trial_used = 1;
+    renderUpgradeBanner();
+    await saveSession();
+
     showResult(result.carousel);
 
   } catch (err) {
@@ -1123,8 +1175,107 @@ function openSettings() {
     o.classList.toggle('selected', o.dataset.template === defaultTpl);
   });
 
+  renderVoiceSection();
   $('#modal-settings').classList.add('open');
 }
+
+function renderVoiceSection() {
+  const isPro = state.user?.plan === 'pro' && state.user?.plan_status === 'active';
+  $('#voice-locked').style.display = isPro ? 'none' : 'block';
+  $('#voice-trainer').style.display = isPro ? 'block' : 'none';
+  if (isPro) loadVoice();
+}
+
+async function loadVoice() {
+  // Reset UI before fetch
+  $('#voice-sample-1').value = '';
+  $('#voice-sample-2').value = '';
+  $('#voice-sample-3').value = '';
+  $('#voice-trained').style.display = 'none';
+  $('#btn-voice-clear').style.display = 'none';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/voice`, {
+      headers: { 'Authorization': `Bearer ${state.token}` },
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const samples = data.samples || [];
+    if (samples[0]) $('#voice-sample-1').value = samples[0];
+    if (samples[1]) $('#voice-sample-2').value = samples[1];
+    if (samples[2]) $('#voice-sample-3').value = samples[2];
+
+    if (data.has_voice && data.profile) {
+      $('#voice-trained').style.display = 'block';
+      $('#btn-voice-clear').style.display = 'block';
+      const trainedAt = data.trained_at ? new Date(data.trained_at * 1000).toLocaleDateString() : '';
+      $('#voice-status-text').textContent = trainedAt ? `Voice trained · ${trainedAt}` : 'Voice trained';
+      const moves = (data.profile.signature_moves || []).slice(0, 3).join(' · ');
+      $('#voice-preview').innerHTML =
+        `<div class="voice-preview-tone">${escapeHtml(data.profile.tone || '')}</div>` +
+        `${escapeHtml(data.profile.directive || '')}` +
+        (moves ? `<div style="margin-top:6px;color:var(--text-muted);">${escapeHtml(moves)}</div>` : '');
+    }
+  } catch (err) {
+    console.warn('loadVoice failed', err);
+  }
+}
+
+async function trainVoice() {
+  const samples = [
+    $('#voice-sample-1').value.trim(),
+    $('#voice-sample-2').value.trim(),
+    $('#voice-sample-3').value.trim(),
+  ].filter(s => s.length >= 60);
+
+  if (samples.length < 2) {
+    toast('Paste at least 2 posts (60+ chars each)');
+    return;
+  }
+
+  const btn = $('#btn-voice-train');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Training...';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/voice/train`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${state.token}`,
+      },
+      body: JSON.stringify({ samples }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Training failed');
+
+    toast('Voice trained — carousels will match your style');
+    await loadVoice();
+  } catch (err) {
+    toast(err.message || 'Training failed');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+async function clearVoice() {
+  if (!confirm('Clear trained voice? This removes the saved profile and samples.')) return;
+  try {
+    const res = await fetch(`${API_BASE}/api/voice`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${state.token}` },
+    });
+    if (!res.ok) throw new Error('Clear failed');
+    toast('Voice cleared');
+    await loadVoice();
+  } catch (err) {
+    toast(err.message || 'Clear failed');
+  }
+}
+
 
 function closeSettings() {
   $('#modal-settings').classList.remove('open');
@@ -1195,7 +1346,8 @@ async function handleLogout() {
 }
 
 // ── Upgrade ───────────────────────────────────────────
-async function handleUpgrade() {
+async function handleUpgrade(plan) {
+  const chosenPlan = plan === 'pro' ? 'pro' : 'creator';
   try {
     const res = await fetch(`${API_BASE}/api/checkout`, {
       method: 'POST',
@@ -1203,7 +1355,7 @@ async function handleUpgrade() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${state.token}`,
       },
-      body: JSON.stringify({ plan: 'creator' }),
+      body: JSON.stringify({ plan: chosenPlan }),
     });
     if (!res.ok) {
       const err = await res.json();

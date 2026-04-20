@@ -29,6 +29,17 @@ export interface User {
   handle: string | null;
   brand_color: string | null;
   default_template: string | null;
+  voice_profile: string | null;
+  voice_samples: string | null;
+  voice_trained_at: number | null;
+}
+
+export interface VoiceProfile {
+  directive: string;
+  tone: string;
+  pacing: string;
+  signature_moves: string[];
+  avoid: string[];
 }
 
 export interface Video {

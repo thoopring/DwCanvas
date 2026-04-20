@@ -482,6 +482,103 @@
       margin-top: 16px;
     }
 
+    /* === BRAND VOICE === */
+    .voice-section {
+      margin-top: 22px; padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+    .voice-head {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 4px;
+    }
+    .voice-title {
+      font-size: 12px; font-weight: 700; color: var(--text);
+    }
+    .voice-badge {
+      font-size: 9px; font-weight: 700;
+      padding: 2px 6px; border-radius: 4px;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      color: white; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .voice-sub {
+      font-size: 11px; color: var(--text-muted);
+      margin-bottom: 12px; line-height: 1.5;
+    }
+    .voice-locked {
+      padding: 14px;
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius-sm);
+      text-align: center;
+    }
+    .voice-locked-text {
+      font-size: 11px; color: var(--text-muted);
+      margin-bottom: 10px; line-height: 1.5;
+    }
+    .voice-upgrade-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: var(--radius-sm);
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      border: none; color: white; font-size: 12px; font-weight: 700;
+      cursor: pointer; transition: 150ms;
+    }
+    .voice-upgrade-btn:hover { opacity: 0.92; }
+    .voice-sample {
+      width: 100%;
+      min-height: 70px; max-height: 180px;
+      padding: 8px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text); font-size: 12px; line-height: 1.5;
+      font-family: inherit;
+      resize: vertical;
+      margin-bottom: 8px;
+    }
+    .voice-sample:focus { outline: none; border-color: var(--accent); }
+    .voice-sample-count {
+      font-size: 10px; color: var(--text-muted);
+      text-align: right; margin-top: -4px; margin-bottom: 8px;
+    }
+    .voice-status {
+      font-size: 11px; color: var(--success);
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .voice-status svg { width: 12px; height: 12px; }
+    .voice-actions {
+      display: flex; gap: 6px; margin-top: 10px;
+    }
+    .voice-actions button { flex: 1; font-size: 12px; padding: 8px; }
+    .btn-train {
+      border-radius: var(--radius-sm);
+      background: var(--accent); color: white;
+      border: none; font-weight: 700; cursor: pointer;
+      transition: 150ms;
+    }
+    .btn-train:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn-train:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-clear {
+      border-radius: var(--radius-sm);
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border); font-weight: 600; cursor: pointer;
+      transition: 150ms;
+    }
+    .btn-clear:hover { color: var(--error); border-color: var(--error); }
+    .voice-preview {
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 11px; color: var(--text-dim);
+      line-height: 1.5; margin-bottom: 10px;
+    }
+    .voice-preview-tone {
+      font-size: 10px; color: var(--accent);
+      font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 4px;
+    }
+
     /* === CAPTURE VIEW === */
     .capture-controls {
       padding: 14px 16px;
@@ -980,6 +1077,43 @@
             <div class="template-option" data-template="clean_light">
               <div class="template-preview clean_light"></div>
               Clean Light
+            </div>
+          </div>
+        </div>
+
+        <!-- BRAND VOICE (Pro) -->
+        <div class="voice-section">
+          <div class="voice-head">
+            <span class="voice-title">Brand Voice</span>
+            <span class="voice-badge">Pro</span>
+          </div>
+          <div class="voice-sub">Paste 2-3 of your best LinkedIn posts. CleanShot writes future carousels in your voice.</div>
+
+          <!-- Locked state (Free/Creator) -->
+          <div class="voice-locked" id="voice-locked" style="display:none">
+            <div class="voice-locked-text">Available on the Pro plan.<br>Your voice, not generic AI.</div>
+            <button class="voice-upgrade-btn" id="btn-voice-upgrade">Upgrade to Pro →</button>
+          </div>
+
+          <!-- Unlocked state (Pro) -->
+          <div id="voice-trainer" style="display:none">
+            <!-- Trained status + preview (shown when profile exists) -->
+            <div id="voice-trained" style="display:none">
+              <div class="voice-status">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+                <span id="voice-status-text">Voice trained</span>
+              </div>
+              <div class="voice-preview" id="voice-preview"></div>
+            </div>
+
+            <!-- Sample inputs -->
+            <textarea class="voice-sample" id="voice-sample-1" placeholder="Sample post 1 — paste a full LinkedIn post (min 60 chars)" maxlength="2500"></textarea>
+            <textarea class="voice-sample" id="voice-sample-2" placeholder="Sample post 2" maxlength="2500"></textarea>
+            <textarea class="voice-sample" id="voice-sample-3" placeholder="Sample post 3 (optional but recommended)" maxlength="2500"></textarea>
+
+            <div class="voice-actions">
+              <button class="btn-clear" id="btn-voice-clear" style="display:none">Clear voice</button>
+              <button class="btn-train" id="btn-voice-train">Train voice</button>
             </div>
           </div>
         </div>

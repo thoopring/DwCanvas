@@ -7,6 +7,7 @@ import { handleProcessVideo, handleGenerateHooks } from './routes/process';
 import { handleLibrary, handleGetVideo, handleDeleteVideo, handlePatchVideo } from './routes/library';
 import { handleCheckout } from './routes/checkout';
 import { handleLemonWebhook } from './routes/webhook-lemon';
+import { handleVoiceGet, handleVoiceTrain, handleVoiceDelete } from './routes/voice';
 
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
@@ -101,6 +102,15 @@ async function route(req: Request, env: Env, path: string): Promise<Response> {
   }
   if (path === '/api/checkout' && req.method === 'POST') {
     return handleCheckout(req, user, env);
+  }
+  if (path === '/api/voice' && req.method === 'GET') {
+    return handleVoiceGet(user, env);
+  }
+  if (path === '/api/voice/train' && req.method === 'POST') {
+    return handleVoiceTrain(req, user, env);
+  }
+  if (path === '/api/voice' && req.method === 'DELETE') {
+    return handleVoiceDelete(user, env);
   }
 
   // /api/videos/:id

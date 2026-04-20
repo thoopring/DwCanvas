@@ -1,6 +1,6 @@
 # CleanShot 피벗 — 진행 상황 스냅샷
 
-> **마지막 업데이트:** 2026-04-15
+> **마지막 업데이트:** 2026-04-21
 > **목적:** Windows 터미널 응답없음 등으로 세션이 튕겼을 때, 사용자와 AI 모두 어디까지 진행했는지 즉시 회복하기 위한 체크포인트.
 > **재개 시 첫 행동:** 이 파일을 먼저 읽고, 그 다음 `TaskList`로 작업 상태 확인, 마지막으로 `git status`로 워킹 트리 확인.
 
@@ -180,9 +180,24 @@ console.log('마지막 시점:', t[t.length-1].t, '초');
 - [x] **Phase A** — Backend Skeleton ✅ (Workers + D1 + R2 + LemonSqueezy + Auth)
 - [x] **Phase B** — Extension UI Refactor ✅ (Pro-quality One-Shot UI)
 - [x] **Phase 2** — AI Integration ✅ (Haiku insights + Sonnet carousel)
-- [x] **Phase 3** — 프로덕션 배포 ✅ (cleanshot-api.thoopring.workers.dev, 실제 Google OAuth + JWT)
-- [ ] **Phase 4** — LemonSqueezy 심사 통과 + 결제 연동 완성 ← **대기 중**
-- [ ] **Phase 5** — Chrome Web Store v2.0 재게시
+- [x] **Phase 3** — 프로덕션 배포 ✅ (AI Gateway, Google OAuth, JWT, FREE_LAUNCH 모드)
+- [x] **템플릿** — 3개 슬라이드 디자인 + PDF + ZIP + How-to-post 가이드
+- [x] **Hook 변형** — 3종 AI 제안 → 사용자 선택
+- [x] **Brand Identity** — Settings 모달 (이름/핸들/색상/템플릿)
+- [x] **Library** — 검색/즐겨찾기/삭제/호버 액션
+- [x] **Capture 탭** — 기존 스크린샷/타임스탬프 기능 복원
+- [x] **에러 가이드** — 14개 에러 코드별 원인+해결책 3단 구조
+- [x] **랜딩페이지** — 다크 테마 + 법률 페이지 3종 (GitHub Pages)
+- [x] **Chrome Web Store v2.0 게시 제출** (2026-04-17)
+- [x] **LemonSqueezy 추가 자료 회신** (데모영상+SNS+상세설명, 2026-04-17)
+- [x] **GitHub push** (v2.0 커밋, add8aec)
+- [x] **CWS v2.0 심사 통과** (2026-04-20)
+- [x] **LemonSqueezy 스토어 활성화** (2026-04-20)
+- [x] **v2.1: Brand Voice (Pro 차별화)** — DB migration 0004, voice routes, Haiku 추출, carousel prompt 주입, Settings UI
+- [x] **랜딩 Pro/Creator 카피 정직화** — 1-click publish/API access 제거, Brand Voice 강조
+- [x] **Launch banner → Upgrade banner** — 유료 전환 준비 (Free trial used / Creator quota / Creator→Pro upsell)
+- [x] **v2.1.0 zip 빌드** (cleanshot-v2.1.0.zip, Python forward-slash 보장)
+- [ ] **Phase 6 남은 작업** — API 키 rotation, LS Webhook, FREE_LAUNCH off, CWS v2.1 업로드
 - [ ] **Phase 3** — Paywall ON, Free Trial 1편 enforcement, LS Checkout
 - [ ] **Phase 4** — Library + Lock-in (R2 영구 저장, 시맨틱 검색)
 - [ ] **Phase 5** — Brand Voice + 1-Click Publish (Pro 기능)

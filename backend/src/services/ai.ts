@@ -1,4 +1,4 @@
-import type { Insight, Carousel } from '../types';
+import type { Insight, Carousel, VoiceProfile } from '../types';
 
 // Route through Cloudflare AI Gateway to avoid Anthropic's
 // "Request not allowed" (403) from APAC/HKG Workers edges.
@@ -87,13 +87,62 @@ Example: ["Leaders don't see your problems.", "Most career advice costs you 5 ye
   }
 }
 
+// === Pro feature: Extract user's voice profile from sample posts (Haiku) ===
+export async function extractVoiceProfile(
+  samples: string[],
+  apiKey: string
+): Promise<VoiceProfile> {
+  const samplesText = samples
+    .map((s, i) => `--- SAMPLE ${i + 1} ---\n${s}`)
+    .join('\n\n');
+
+  const response = await callClaude({
+    apiKey,
+    model: 'claude-haiku-4-5-20251001',
+    system: `You are a writing style analyst. Given sample posts from one author, extract a compact voice profile that captures what makes their writing distinct.
+
+Output STRICT JSON (no markdown fences) with these fields:
+- tone: 5-12 words describing overall voice (e.g., "direct, contrarian, no corporate fluff, data-driven")
+- pacing: short description of sentence rhythm (e.g., "mostly short punchy sentences with occasional long reflective ones")
+- signature_moves: array of 3-5 specific recurring patterns (e.g., ["opens with a rhetorical question", "uses specific numbers for authority", "ends with a provocation"])
+- avoid: array of words, phrases, or tics the author clearly avoids (e.g., ["corporate buzzwords", "emojis", "exclamation marks"])
+- directive: 2-3 sentence instruction telling another AI writer how to match this voice. Make it actionable and specific to THIS author — not generic writing advice.
+
+Output format:
+{"tone":"...", "pacing":"...", "signature_moves":["..."], "avoid":["..."], "directive":"..."}`,
+    user: `Analyze these sample posts and extract the author's voice profile:\n\n${samplesText}`,
+    maxTokens: 800,
+  });
+
+  try {
+    const jsonStr = response.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+    const parsed = JSON.parse(jsonStr) as Partial<VoiceProfile>;
+
+    if (!parsed.directive || !parsed.tone) {
+      throw new Error('Voice profile missing required fields');
+    }
+
+    return {
+      tone: parsed.tone,
+      pacing: parsed.pacing || '',
+      signature_moves: Array.isArray(parsed.signature_moves) ? parsed.signature_moves.slice(0, 8) : [],
+      avoid: Array.isArray(parsed.avoid) ? parsed.avoid.slice(0, 8) : [],
+      directive: parsed.directive,
+    };
+  } catch (e) {
+    console.error('Failed to parse voice profile:', e, response);
+    throw new Error('AI returned invalid voice profile format');
+  }
+}
+
 // === Step 2: Generate LinkedIn carousel copy (Sonnet — high quality) ===
 export async function generateCarousel(
   insights: Insight[],
   title: string,
   persona: string,
   apiKey: string,
-  chosenHook?: string
+  chosenHook?: string,
+  voiceProfile?: VoiceProfile | null
 ): Promise<Carousel> {
   const insightsText = insights
     .map((ins, i) => `${i + 1}. [${formatTime(ins.t)}] ${ins.headline}: ${ins.body}`)
@@ -118,7 +167,20 @@ Output format:
 {"hook":"...", "slides":[{"title":"Bold statement","body":"1-2 sentences"}], "cta":"...", "hashtags":["#Tag1","#Tag2"]}`,
   };
 
-  const systemPrompt = personaPrompts[persona] || personaPrompts.linkedin_hooked;
+  let systemPrompt = personaPrompts[persona] || personaPrompts.linkedin_hooked;
+
+  if (voiceProfile?.directive) {
+    const moves = voiceProfile.signature_moves?.length
+      ? `\n- Signature moves to reproduce: ${voiceProfile.signature_moves.join('; ')}`
+      : '';
+    const avoid = voiceProfile.avoid?.length
+      ? `\n- Avoid: ${voiceProfile.avoid.join(', ')}`
+      : '';
+    systemPrompt = systemPrompt.replace(
+      /- Tone:[^\n]*/,
+      `- Tone: ${voiceProfile.tone}. ${voiceProfile.directive}${moves}${avoid}`
+    );
+  }
 
   const userPrompt = chosenHook
     ? `Create a LinkedIn carousel from these insights extracted from the video "${title}".

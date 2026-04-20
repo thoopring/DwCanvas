@@ -20,6 +20,8 @@ export async function handleMe(user: User, env: Env): Promise<Response> {
     handle: user.handle,
     brand_color: user.brand_color || '#6366F1',
     default_template: user.default_template || 'minimal_dark',
+    has_voice: !!user.voice_profile,
+    voice_trained_at: user.voice_trained_at,
     usage: {
       month: ym,
       videos_used: usage?.videos_used ?? 0,

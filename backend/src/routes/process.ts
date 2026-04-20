@@ -1,7 +1,17 @@
-import type { Env, User } from '../types';
+import type { Env, User, VoiceProfile } from '../types';
 import { canProcess, canProcessWithEnv, incrementUsage } from '../services/quota';
 import { createVideo, updateVideo } from '../db/queries';
 import { extractInsights, generateCarousel, generateHookVariants } from '../services/ai';
+
+function getUserVoiceProfile(user: User): VoiceProfile | null {
+  if (user.plan !== 'pro' || user.plan_status !== 'active') return null;
+  if (!user.voice_profile) return null;
+  try {
+    return JSON.parse(user.voice_profile) as VoiceProfile;
+  } catch {
+    return null;
+  }
+}
 
 // NEW: Generate hooks without consuming quota (preview step)
 export async function handleGenerateHooks(req: Request, user: User, env: Env): Promise<Response> {
@@ -101,7 +111,8 @@ export async function handleProcessVideo(req: Request, user: User, env: Env): Pr
       body.title || 'YouTube Video',
       persona,
       env.ANTHROPIC_API_KEY,
-      body.chosen_hook
+      body.chosen_hook,
+      getUserVoiceProfile(user)
     );
 
     await updateVideo(env.DB, videoId, {
