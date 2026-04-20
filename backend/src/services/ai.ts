@@ -176,10 +176,14 @@ Output format:
     const avoid = voiceProfile.avoid?.length
       ? `\n- Avoid: ${voiceProfile.avoid.join(', ')}`
       : '';
-    systemPrompt = systemPrompt.replace(
-      /- Tone:[^\n]*/,
-      `- Tone: ${voiceProfile.tone}. ${voiceProfile.directive}${moves}${avoid}`
-    );
+    const voiceBlock = `- Tone: ${voiceProfile.tone}. ${voiceProfile.directive}${moves}${avoid}`;
+    const toneRegex = /- Tone:[^\n]*/;
+    if (toneRegex.test(systemPrompt)) {
+      systemPrompt = systemPrompt.replace(toneRegex, voiceBlock);
+    } else {
+      // Prompt template changed and no longer has "- Tone:" — append so voice still applies
+      systemPrompt += `\n\nWRITER VOICE (match exactly):\n${voiceBlock}`;
+    }
   }
 
   const userPrompt = chosenHook
