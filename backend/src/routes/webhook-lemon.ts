@@ -43,15 +43,15 @@ export async function handleLemonWebhook(req: Request, env: Env): Promise<Respon
     return new Response('OK', { status: 200 });
   }
 
-  // Idempotency check
-  const eventId = `${eventName}_${event.data.id}_${Date.now()}`;
+  // Idempotency — same event+subscription delivered twice should no-op
+  const eventId = `${eventName}_${event.data.id}`;
   const existing = await env.DB.prepare('SELECT id FROM lemon_events WHERE id = ?').bind(eventId).first();
   if (existing) return new Response('OK', { status: 200 });
   await env.DB.prepare('INSERT INTO lemon_events (id, received_at) VALUES (?, ?)').bind(eventId, Math.floor(Date.now() / 1000)).run();
 
   const variantToPlan: Record<string, string> = {
-    '1531671': 'creator',
-    '1531679': 'pro',
+    '1555013': 'creator',
+    '1555017': 'pro',
   };
 
   const plan = variantToPlan[String(attrs.variant_id)] || 'creator';

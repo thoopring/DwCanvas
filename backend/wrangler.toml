@@ -15,7 +15,7 @@ bucket_name = "cleanshot-artifacts"
 
 [vars]
 APP_ENV = "production"
-FREE_LAUNCH = "true"
+FREE_LAUNCH = "false"
 
 # Secrets (set via `wrangler secret put <NAME>`):
 # - ANTHROPIC_API_KEY

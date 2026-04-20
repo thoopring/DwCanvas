@@ -7,8 +7,8 @@ export async function handleCheckout(req: Request, user: User, env: Env): Promis
   const plan = body.plan || 'creator';
 
   const variantIds: Record<string, string> = {
-    creator: '1531671',
-    pro: '1531679',
+    creator: '1555013',
+    pro: '1555017',
   };
 
   const variantId = variantIds[plan];
@@ -17,7 +17,7 @@ export async function handleCheckout(req: Request, user: User, env: Env): Promis
   }
 
   // Build LemonSqueezy checkout URL with prefilled customer info
-  const checkoutUrl = new URL(`https://getcleanshot.lemonsqueezy.com/checkout/buy/${variantId}`);
+  const checkoutUrl = new URL(`https://cleanshot-app.lemonsqueezy.com/checkout/buy/${variantId}`);
   checkoutUrl.searchParams.set('checkout[email]', user.email);
   checkoutUrl.searchParams.set('checkout[name]', user.name || '');
   checkoutUrl.searchParams.set('checkout[custom][user_id]', String(user.id));
