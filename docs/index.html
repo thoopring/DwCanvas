@@ -193,6 +193,37 @@
     }
     .compare-col li strong { color: var(--text); }
 
+    /* VOICE FEATURE */
+    .voice-section {
+      max-width: 680px; margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+    .voice-card {
+      padding: 32px; border-radius: 12px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(167,139,250,0.08));
+      border: 1px solid var(--accent);
+    }
+    .voice-badge {
+      display: inline-block; font-size: 9px; font-weight: 700;
+      padding: 3px 10px; border-radius: 4px;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      color: white; text-transform: uppercase; letter-spacing: 0.5px;
+      margin-bottom: 14px;
+    }
+    .voice-card h2 {
+      font-size: 22px; font-weight: 800;
+      letter-spacing: -0.5px; margin-bottom: 10px;
+    }
+    .voice-card p {
+      font-size: 13px; color: var(--text-dim);
+      line-height: 1.7; margin-bottom: 14px;
+    }
+    .voice-card .voice-quote {
+      font-size: 12px; color: var(--text-muted);
+      font-style: italic; padding-left: 12px;
+      border-left: 2px solid var(--accent); margin-bottom: 6px;
+    }
+
     /* PRICING */
     .pricing-section {
       max-width: 900px; margin: 0 auto;
@@ -277,7 +308,7 @@
     <div class="nav-right">
       <a href="#how">How it works</a>
       <a href="#pricing">Pricing</a>
-      <a href="https://chrome.google.com/webstore" class="btn-sm">Install</a>
+      <a href="https://chromewebstore.google.com/detail/edmcmaccinkbibcbafabojdiaadnejbd" class="btn-sm">Install</a>
     </div>
   </nav>
 
@@ -285,7 +316,7 @@
   <section class="hero">
     <h1>YouTube video to<br><em>LinkedIn carousel.</em><br>One click.</h1>
     <p>Open any video. Hit one button. Get a publish-ready carousel with AI-generated hooks, insights, and CTAs. No prompt writing. No editing.</p>
-    <a href="https://chrome.google.com/webstore" class="hero-cta">Install CleanShot</a>
+    <a href="https://chromewebstore.google.com/detail/edmcmaccinkbibcbafabojdiaadnejbd" class="hero-cta">Install CleanShot</a>
     <div class="hero-note">Free to try. No credit card.</div>
   </section>
 
@@ -318,7 +349,7 @@
             <div class="demo-slide-label">Slide 3</div>
             <div class="demo-slide-text">Naming the problem is the easy part.</div>
           </div>
-          <div class="demo-btn">Copy carousel &rarr;</div>
+          <div class="demo-btn">Download ZIP &rarr;</div>
         </div>
       </div>
     </div>
@@ -340,8 +371,8 @@
       </div>
       <div class="step-item">
         <div class="step-num">03</div>
-        <h3>Post to LinkedIn</h3>
-        <p>Copy the carousel text. Paste into LinkedIn. You're done.</p>
+        <h3>Download and post</h3>
+        <p>Export a ZIP with PDF + PNGs + caption. Drag into LinkedIn, paste the caption, publish.</p>
       </div>
     </div>
   </section>
@@ -364,7 +395,7 @@
         <ul>
           <li>Open the video</li>
           <li>Click one button</li>
-          <li>Copy and post</li>
+          <li>Download ZIP, drag to LinkedIn</li>
           <li>&nbsp;</li>
           <li><strong>~2 minutes per post</strong></li>
         </ul>
@@ -372,10 +403,20 @@
     </div>
   </section>
 
+  <!-- BRAND VOICE (Pro feature highlight) -->
+  <section class="voice-section">
+    <div class="voice-card">
+      <span class="voice-badge">Pro feature</span>
+      <h2>Brand Voice &mdash; AI writes like you, not like AI.</h2>
+      <p>Paste 2&ndash;3 of your best LinkedIn posts once. CleanShot learns your tone, your pacing, your signature moves. Every carousel after that sounds like you wrote it on your sharpest day.</p>
+      <div class="voice-quote">"Most AI tools make you sound like everyone else. Brand Voice is the opposite."</div>
+    </div>
+  </section>
+
   <!-- PRICING -->
   <section class="pricing-section" id="pricing">
     <h2>Pricing</h2>
-    <p class="pricing-sub">Try free. Upgrade when it clicks.</p>
+    <p class="pricing-sub">Try free. Upgrade from inside the extension after signing in.</p>
     <div class="pricing-grid">
       <div class="price-card">
         <div class="price-name">Free</div>
@@ -386,7 +427,7 @@
           <li>Full carousel output</li>
           <li>Copy to clipboard</li>
         </ul>
-        <a href="https://chrome.google.com/webstore" class="price-btn outline">Install</a>
+        <a href="https://chromewebstore.google.com/detail/edmcmaccinkbibcbafabojdiaadnejbd" class="price-btn outline">Install</a>
       </div>
       <div class="price-card pop">
         <div class="price-tag">Popular</div>
@@ -400,7 +441,7 @@
           <li>Video library</li>
           <li>ZIP export (PDF + PNGs)</li>
         </ul>
-        <a href="#" class="price-btn fill">Get Creator</a>
+        <a href="https://chromewebstore.google.com/detail/edmcmaccinkbibcbafabojdiaadnejbd" class="price-btn fill">Install &amp; Upgrade</a>
       </div>
       <div class="price-card">
         <div class="price-name">Pro</div>
@@ -412,7 +453,7 @@
           <li>Everything in Creator</li>
           <li>Early access to new features</li>
         </ul>
-        <a href="#" class="price-btn outline">Get Pro</a>
+        <a href="https://chromewebstore.google.com/detail/edmcmaccinkbibcbafabojdiaadnejbd" class="price-btn outline">Install &amp; Upgrade</a>
       </div>
     </div>
   </section>

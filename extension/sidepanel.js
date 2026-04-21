@@ -79,6 +79,14 @@ function setupListeners() {
   });
   $('#btn-logout')?.addEventListener('click', handleLogout);
   $('#btn-settings')?.addEventListener('click', openSettings);
+  $('#btn-website')?.addEventListener('click', () => {
+    $('#user-dropdown').classList.remove('open');
+    chrome.tabs.create({ url: 'https://thoopring.github.io/DwCanvas/' });
+  });
+  $('#btn-privacy')?.addEventListener('click', () => {
+    $('#user-dropdown').classList.remove('open');
+    chrome.tabs.create({ url: 'https://thoopring.github.io/DwCanvas/privacy.html' });
+  });
   $('#btn-settings-cancel')?.addEventListener('click', closeSettings);
   $('#btn-settings-save')?.addEventListener('click', saveSettings);
   $('#btn-voice-upgrade')?.addEventListener('click', () => handleUpgrade('pro'));
